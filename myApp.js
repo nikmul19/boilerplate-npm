@@ -4,6 +4,35 @@ var app = express();
 console.log("hello world");
 
 app.use(express.static(__dirname+'/public'));
+app.use(function(req,res,next){
+  console.log(req.method+" "+req.path+" - "+req.ip);
+  next();
+  
+});
+
+app.get('/now',function(req,res,next){
+  var time=new Date().toString();
+  req.time=time;
+  next();
+  
+},
+        function(req,res){
+  res.json({"time":req.time})
+});
+
+
+app.get('/:word/echo',function(req,res){
+  
+  res.json({"echo":req.params.word});
+});
+
+app.route('/name').get(function(req,res){
+  
+  var json={"name":req.query.first+" "+req.query.last};
+  res.json(json);
+});
+
+
 app.get('/',function(req,res){
   
   
@@ -13,6 +42,16 @@ app.get('/',function(req,res){
   
 });
 
+
+app.get('/json',function(req,res){
+  
+  var jsonObj={"message":"Hello json"};
+  if(process.env.MESSAGE_STYLE=="uppercase"){
+    jsonObj.message="HELLO JSON";
+  }
+  res.json(jsonObj);
+  
+});
 
 app.get('/',function(req,res){
   res.send('Hello Express');
